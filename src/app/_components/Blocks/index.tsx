@@ -1,12 +1,12 @@
 import React, { Fragment } from 'react'
 
 import { Page } from '../../../payload/payload-types.js'
-import { ArchiveBlock } from '../../_blocks/ArchiveBlock'
-import { CallToActionBlock } from '../../_blocks/CallToAction'
-import { ContentBlock } from '../../_blocks/Content'
-import { MediaBlock } from '../../_blocks/MediaBlock'
-import { RelatedProducts, type RelatedProductsProps } from '../../_blocks/RelatedProducts'
-import { toKebabCase } from '../../_utilities/toKebabCase'
+import { ArchiveBlock } from '../../_blocks/ArchiveBlock/index.jsx'
+import { CallToActionBlock } from '../../_blocks/CallToAction/index.jsx'
+import { ContentBlock } from '../../_blocks/Content/index.jsx'
+import { MediaBlock } from '../../_blocks/MediaBlock/index.jsx'
+import { RelatedProducts, type RelatedProductsProps } from '../../_blocks/RelatedProducts/index.jsx'
+import { toKebabCase } from '../../_utilities/toKebabCase.js'
 import { BackgroundColor } from '../BackgroundColor/index'
 import { VerticalPadding, VerticalPaddingOptions } from '../VerticalPadding/index'
 
