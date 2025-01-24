@@ -1,0 +1,119 @@
+# name: Build and Deploy
+
+# on:
+#   workflow_call:
+#     inputs:
+#       environment:
+#         description: "Environment name"
+#         required: true
+#         type: string
+#       containerNamespaceID:
+#         description: "ScaleWay Container Namespace"
+#         required: true
+#         type: string
+#       region:
+#         description: "region name"
+#         required: true
+#         type: string
+#         default: "fr-par"
+#       projectId:
+#         description: "project ID"
+#         required: false
+#         type: string
+#         default: ""
+#       appName:
+#         description: "Application Name"
+#         required: true
+#         type: string
+
+# jobs:
+#   notify-start:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Notify start on Slack
+#         uses: rtCamp/action-slack-notify@v2
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+#           SLACK_MESSAGE: "Deployment to Scaleway Containers started! :eyes:"
+#           SLACK_USERNAME: "Automation"
+#           SLACK_ICON: ":rocket:"
+
+#   build-and-push:
+#     name: Build and Push Docker Image
+#     runs-on: ubuntu-latest
+#     environment: ${{ inputs.environment }}
+#     env:
+#       REGION: ${{ inputs.region }}
+#       REPOSITORY: rg.${{ inputs.region }}.scw.cloud/${{ inputs.appName }}
+#       NAMESPACE: ${{ inputs.containerNamespaceID }}
+#       PROJECT_ID: ${{ inputs.projectId }}
+#       APP_NAME: ${{ inputs.appName }}
+
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v2
+#     - name: Overwrite .env file with .env.container
+#       run: cp .env.container .env
+#     - name: Login to Scaleway Container Registry
+#       uses: docker/login-action@v3
+#       with:
+#         username: nologin
+#         password: ${{ secrets.SCW_SECRET_KEY }}
+#         registry: ${{ env.REPOSITORY }}
+#     - name: Build the Docker image
+#       run: docker build . -t ${{ env.REPOSITORY }}/dtb:latest
+#     - name: Push the Docker Image
+#       run: docker push ${{ env.REPOSITORY }}/dtb:latest
+
+
+#   deploy:
+#     runs-on: ubuntu-latest
+#     name: Deploy on Scaleway Containers
+#     needs: build-and-push
+#     environment: ${{ inputs.environment }}
+#     env:
+#       REGION: ${{ inputs.region }}
+#       REPOSITORY: rg.${{ inputs.region }}.scw.cloud/${{ inputs.appName }}
+#       NAMESPACE: ${{ inputs.containerNamespaceID }}
+#       PROJECT_ID: ${{ inputs.projectId }}
+#       APP_NAME: ${{ inputs.appName }}
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+#       - name: Scaleway Container Deploy action
+#         id: deploy
+#         uses:  philibea/scaleway-containers-deploy@v1.0.5
+#         with:
+#           type: deploy
+#           scw_access_key:  ${{ secrets.SCW_ACCESS_KEY }}
+#           scw_secret_key: ${{ secrets.SCW_SECRET_KEY }}
+#           scw_containers_namespace_id: ${{ env.NAMESPACE }}
+#           scw_container_port: 3000
+#           scw_registry: ${{ env.REPOSITORY }}/dtb:latest
+
+#   notify-success:
+#     runs-on: ubuntu-latest
+#     needs: [build-and-push, deploy]
+#     if: success()
+#     steps:
+#       - name: Notify success on Slack
+#         uses: rtCamp/action-slack-notify@v2
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+#           SLACK_MESSAGE: "Deployment to Scaleway Containers was successful! :tada:"
+#           SLACK_USERNAME: "Automation"
+#           SLACK_ICON: ":rocket:"
+
+#   notify-failure:
+#     runs-on: ubuntu-latest
+#     needs: [build-and-push, deploy]
+#     if: failure()
+#     steps:
+#       - name: Notify failure on Slack
+#         uses: rtCamp/action-slack-notify@v2
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+#           SLACK_MESSAGE: "Deployment to Scaleway Containers failed! :x:"
+#           SLACK_USERNAME: "Automation"
+#           SLACK_ICON: ":warning:"
+
