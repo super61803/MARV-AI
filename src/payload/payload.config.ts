@@ -134,7 +134,7 @@ export default buildConfig({
         'price.updated': priceUpdated,
       },
     }),
-    swagger(),
+    swagger({}),
     redirects({
       collections: ['pages', 'products'],
     }),

@@ -1,7 +1,7 @@
 {
-  "name": "marvApi",
-  "description": "E-commerce template for Payload",
-  "version": "1.0.0",
+  "name": "MARV AI",
+  "description": "Marv Tech API List",
+  "version": "0.0.1",
   "main": "dist/server.js",
   "license": "MIT",
   "scripts": {
