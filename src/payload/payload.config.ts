@@ -79,6 +79,7 @@ export default buildConfig({
   },
   editor: slateEditor({}),
   db: postgresAdapter({
+    idType: 'uuid',
     pool: {
       connectionString: process.env.DATABASE_URI,
     },
