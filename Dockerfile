@@ -12,7 +12,7 @@ RUN npm run build
 FROM base as runtime
 
 ENV NODE_ENV=production
-ENV PAYLOAD_CONFIG_PATH=dist/payload.config.js
+ENV PAYLOAD_CONFIG_PATH=dist/payload/payload.config.js
 
 WORKDIR /home/node/app
 COPY package.json package-lock.json ./
@@ -20,6 +20,9 @@ COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps --production
 COPY --from=builder /home/node/app/dist ./dist
 COPY --from=builder /home/node/app/build ./build
+
+# Copy the .env file
+COPY .env ./
 
 EXPOSE 3000
 
