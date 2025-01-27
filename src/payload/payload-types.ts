@@ -465,7 +465,7 @@ export interface User {
  */
 export interface Language {
   id: number;
-  title?: string | null;
+  code?: string | null;
   value?: string | null;
   updatedAt: string;
   createdAt: string;

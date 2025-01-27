@@ -1,13 +1,13 @@
-FROM node:18.8-alpine as base
+FROM node:20.15-bullseye-slim as base
 
 FROM base as builder
 
 WORKDIR /home/node/app
-COPY package*.json ./
+COPY package.json package-lock.json ./
+RUN npm install --legacy-peer-deps
 
 COPY . .
-RUN yarn install
-RUN yarn build
+RUN npm run build
 
 FROM base as runtime
 
@@ -15,10 +15,9 @@ ENV NODE_ENV=production
 ENV PAYLOAD_CONFIG_PATH=dist/payload.config.js
 
 WORKDIR /home/node/app
-COPY package*.json  ./
-COPY yarn.lock ./
+COPY package.json package-lock.json ./
 
-RUN yarn install --production
+RUN npm install --legacy-peer-deps --production
 COPY --from=builder /home/node/app/dist ./dist
 COPY --from=builder /home/node/app/build ./build
 
