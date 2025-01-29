@@ -28,6 +28,16 @@ export interface Config {
     users: User;
     languages: Language;
     countries: Country;
+    favorites: Favorite;
+    allergies: Allergy;
+    certifications: Certification;
+    education_level: EducationLevel;
+    gallery: Gallery;
+    keywords: Keyword;
+    posts: Post;
+    ratings: Rating;
+    reviews: Review;
+    vehicle_types: VehicleType;
     redirects: Redirect;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -437,36 +447,49 @@ export interface User {
   name: string;
   firstName: string;
   lastName: string;
-  roles?: ('admin' | 'marveler' | 'counselor' | 'support')[] | null;
-  dob: string;
-  phoneCode: number;
+  roles?: ('admin' | 'marveler' | 'counselor' | 'manager' | 'support')[] | null;
+  date_of_birth: string;
   phoneNumber: string;
   profile_img: string | Media;
   gender: 'male' | 'female' | 'other';
-  certifications?: string | null;
-  education?: string | null;
-  career_history?: string | null;
-  has_vehicle?: boolean | null;
-  vehicle_type?: string | null;
+  nationality?: (string | null) | Country;
+  pronouns?: ('she/her' | 'he/him' | 'they/them' | 'other') | null;
+  notes?:
+    | {
+        [k: string]: unknown;
+      }[]
+    | null;
   city?: string | null;
   years_in_city?: number | null;
-  bio?: string | null;
-  has_special_needs?: boolean | null;
-  is_smoker?: boolean | null;
   facebook?: string | null;
   twitter?: string | null;
   instagram?: string | null;
   linkedIn?: string | null;
+  certifications?: (string | null) | Certification;
+  education?: (string | null) | EducationLevel;
+  career_history?: string | null;
+  has_special_needs?: boolean | null;
+  is_smoker?: boolean | null;
+  allergies?: (string | Allergy)[] | null;
+  has_vehicle?: boolean | null;
+  vehicle_type?: string | null;
+  bio?:
+    | {
+        [k: string]: unknown;
+      }[]
+    | null;
   native_language?: (string | null) | Language;
   spoken_languages?: (string | Language)[] | null;
-  keywords?: string | null;
-  nationality?: (string | null) | Country;
-  purchases?: (string | Product)[] | null;
+  keywords?: (string | Keyword)[] | null;
   stripeCustomerID?: string | null;
   cart?: {
     items?: CartItems;
+    createdOn?: string | null;
+    lastModified?: string | null;
   };
+  purchases?: (string | Product)[] | null;
   skipSync?: boolean | null;
+  subscribe_to_news?: boolean | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -477,6 +500,50 @@ export interface User {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "countries".
+ */
+export interface Country {
+  id: string;
+  NAME_EN?: string | null;
+  NAME_AR?: string | null;
+  ALPHA2_CODE?: string | null;
+  ALPHA3_CODE?: string | null;
+  PHONE_CODE?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "certifications".
+ */
+export interface Certification {
+  id: string;
+  title?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "education_level".
+ */
+export interface EducationLevel {
+  id: string;
+  title?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "allergies".
+ */
+export interface Allergy {
+  id: string;
+  title?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -491,15 +558,300 @@ export interface Language {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "countries".
+ * via the `definition` "keywords".
  */
-export interface Country {
+export interface Keyword {
   id: string;
-  NAME_EN?: string | null;
-  NAME_AR?: string | null;
-  ALPHA2_CODE?: string | null;
-  ALPHA3_CODE?: string | null;
-  PHONE_CODE?: string | null;
+  name: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "favorites".
+ */
+export interface Favorite {
+  id: string;
+  marvelerId: string | User;
+  counselorId: string | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery".
+ */
+export interface Gallery {
+  id: string;
+  marvelerId: string | User;
+  couselorId: string | User;
+  media: {
+    mediaItem: string | Media;
+    caption?:
+      | {
+          [k: string]: unknown;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: string;
+  title: string;
+  categories?: (string | Category)[] | null;
+  publishedAt?: string | null;
+  authors?: (string | User)[] | null;
+  populatedAuthors?:
+    | {
+        id?: string | null;
+        name?: string | null;
+      }[]
+    | null;
+  hero: {
+    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    richText: {
+      [k: string]: unknown;
+    }[];
+    links?:
+      | {
+          link: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?: {
+              relationTo: 'pages';
+              value: string | Page;
+            } | null;
+            url?: string | null;
+            label: string;
+            appearance?: ('default' | 'primary' | 'secondary') | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    media?: string | Media | null;
+  };
+  layout: (
+    | {
+        invertBackground?: boolean | null;
+        richText: {
+          [k: string]: unknown;
+        }[];
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?: {
+                  relationTo: 'pages';
+                  value: string | Page;
+                } | null;
+                url?: string | null;
+                label: string;
+                appearance?: ('primary' | 'secondary') | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'cta';
+      }
+    | {
+        invertBackground?: boolean | null;
+        columns?:
+          | {
+              size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
+              richText: {
+                [k: string]: unknown;
+              }[];
+              enableLink?: boolean | null;
+              link?: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?: {
+                  relationTo: 'pages';
+                  value: string | Page;
+                } | null;
+                url?: string | null;
+                label: string;
+                appearance?: ('default' | 'primary' | 'secondary') | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'content';
+      }
+    | {
+        invertBackground?: boolean | null;
+        position?: ('default' | 'fullscreen') | null;
+        media: string | Media;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'mediaBlock';
+      }
+    | {
+        introContent: {
+          [k: string]: unknown;
+        }[];
+        populateBy?: ('collection' | 'selection') | null;
+        relationTo?: 'products' | null;
+        categories?: (string | Category)[] | null;
+        limit?: number | null;
+        selectedDocs?:
+          | {
+              relationTo: 'products';
+              value: string | Product;
+            }[]
+          | null;
+        populatedDocs?:
+          | {
+              relationTo: 'products';
+              value: string | Product;
+            }[]
+          | null;
+        populatedDocsTotal?: number | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'archive';
+      }
+  )[];
+  enablePremiumContent?: boolean | null;
+  premiumContent?:
+    | (
+        | {
+            invertBackground?: boolean | null;
+            richText: {
+              [k: string]: unknown;
+            }[];
+            links?:
+              | {
+                  link: {
+                    type?: ('reference' | 'custom') | null;
+                    newTab?: boolean | null;
+                    reference?: {
+                      relationTo: 'pages';
+                      value: string | Page;
+                    } | null;
+                    url?: string | null;
+                    label: string;
+                    appearance?: ('primary' | 'secondary') | null;
+                  };
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta';
+          }
+        | {
+            invertBackground?: boolean | null;
+            columns?:
+              | {
+                  size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
+                  richText: {
+                    [k: string]: unknown;
+                  }[];
+                  enableLink?: boolean | null;
+                  link?: {
+                    type?: ('reference' | 'custom') | null;
+                    newTab?: boolean | null;
+                    reference?: {
+                      relationTo: 'pages';
+                      value: string | Page;
+                    } | null;
+                    url?: string | null;
+                    label: string;
+                    appearance?: ('default' | 'primary' | 'secondary') | null;
+                  };
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'content';
+          }
+        | {
+            invertBackground?: boolean | null;
+            position?: ('default' | 'fullscreen') | null;
+            media: string | Media;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'mediaBlock';
+          }
+        | {
+            introContent: {
+              [k: string]: unknown;
+            }[];
+            populateBy?: ('collection' | 'selection') | null;
+            relationTo?: 'products' | null;
+            categories?: (string | Category)[] | null;
+            limit?: number | null;
+            selectedDocs?:
+              | {
+                  relationTo: 'products';
+                  value: string | Product;
+                }[]
+              | null;
+            populatedDocs?:
+              | {
+                  relationTo: 'products';
+                  value: string | Product;
+                }[]
+              | null;
+            populatedDocsTotal?: number | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'archive';
+          }
+      )[]
+    | null;
+  relatedPosts?: (string | Post)[] | null;
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ratings".
+ */
+export interface Rating {
+  id: string;
+  userId: string | User;
+  keywordId: string | Keyword;
+  rating: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: string;
+  marvelerId: string | User;
+  counselorId: string | User;
+  title: string;
+  comment: string;
+  rating: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vehicle_types".
+ */
+export interface VehicleType {
+  id: string;
+  title?: string | null;
   updatedAt: string;
   createdAt: string;
 }
