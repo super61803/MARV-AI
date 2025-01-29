@@ -12,14 +12,24 @@ import path from 'path'
 import { buildConfig } from 'payload/config'
 import swagger from 'payload-swagger'
 
-import Categories from './collections/Categories'
-import Countries from './collections/Countries'
-import Languages from './collections/Languages'
-import { Media } from './collections/Media'
+import Allergie from './collections/Allergies/Allergie'
+import Categories from './collections/Categories/Categories'
+import Certification from './collections/Certifications/Certification'
+import Countries from './collections/Countries/Countries'
+import Education from './collections/Education/Education'
+import Favorite from './collections/Favorite/Favorite'
+import Gallery from './collections/Gallery/Gallery'
+import Keywords from './collections/Keywords/Keywords'
+import Languages from './collections/Languages/Languages'
+import { Media } from './collections/Media/Media'
 import { Orders } from './collections/Orders'
 import { Pages } from './collections/Pages'
+import { Posts } from './collections/Posts'
 import Products from './collections/Products'
+import Rating from './collections/Rating/Rating'
+import Review from './collections/Review/Review'
 import Users from './collections/Users'
+import VehicleType from './collections/Vehicle Type/Vehicle_type'
 import BeforeDashboard from './components/BeforeDashboard'
 import BeforeLogin from './components/BeforeLogin'
 import { createPaymentIntent } from './endpoints/create-payment-intent'
@@ -85,7 +95,26 @@ export default buildConfig({
     },
   }),
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL,
-  collections: [Pages, Products, Orders, Media, Categories, Users, Languages, Countries],
+  collections: [
+    Pages,
+    Products,
+    Orders,
+    Media,
+    Categories,
+    Users,
+    Languages,
+    Countries,
+    Favorite,
+    Allergie,
+    Certification,
+    Education,
+    Gallery,
+    Keywords,
+    Posts,
+    Rating,
+    Review,
+    VehicleType,
+  ],
   globals: [Settings, Header, Footer],
   typescript: {
     outputFile: path.resolve(__dirname, 'payload-types.ts'),

@@ -1,3 +1,4 @@
+import { slateEditor } from '@payloadcms/richtext-slate'
 import type { CollectionConfig } from 'payload/types'
 
 import { admins } from '../../access/admins'
@@ -51,7 +52,8 @@ const Users: CollectionConfig = {
             {
               name: 'name',
               type: 'text',
-              required: true,
+              required: false,
+              hidden: true,
             },
             {
               name: 'firstName',
@@ -63,12 +65,12 @@ const Users: CollectionConfig = {
               type: 'text',
               required: true,
             },
-            {
-              name: 'email',
-              type: 'email',
-              unique: true,
-              required: true,
-            },
+            // {
+            //   name: 'email',
+            //   type: 'email',
+            //   unique: true,
+            //   required: true,
+            // },
             {
               name: 'roles',
               type: 'select',
@@ -106,13 +108,8 @@ const Users: CollectionConfig = {
               },
             },
             {
-              name: 'dob',
+              name: 'date_of_birth',
               type: 'date',
-              required: true,
-            },
-            {
-              name: 'phoneCode',
-              type: 'number',
               required: true,
             },
             {
@@ -122,7 +119,7 @@ const Users: CollectionConfig = {
             },
             {
               name: 'profile_img',
-              type: 'relationship',
+              type: 'upload',
               relationTo: 'media',
               required: true,
             },
@@ -151,6 +148,51 @@ const Users: CollectionConfig = {
               relationTo: 'countries',
               hasMany: false,
               required: false,
+            },
+            {
+              name: 'pronouns',
+              type: 'select',
+              defaultValue: ['he/him'],
+              options: [
+                {
+                  label: 'She/Her',
+                  value: 'she/her',
+                },
+                {
+                  label: 'He/Him',
+                  value: 'he/him',
+                },
+                {
+                  label: 'They/Them',
+                  value: 'they/them',
+                },
+                {
+                  label: 'Other',
+                  value: 'other',
+                },
+              ],
+            },
+            {
+              name: 'notes',
+              type: 'richText',
+              editor: slateEditor({
+                admin: {
+                  elements: [
+                    'h1',
+                    'h2',
+                    'h3',
+                    'h4',
+                    'h5',
+                    'h6',
+                    'blockquote',
+                    'link',
+                    'indent',
+                    'textAlign',
+                    'ol',
+                    'ul',
+                  ],
+                },
+              }),
             },
           ],
         },
@@ -194,12 +236,14 @@ const Users: CollectionConfig = {
           fields: [
             {
               name: 'certifications',
-              type: 'text',
+              type: 'relationship',
+              relationTo: 'certifications',
               required: false,
             },
             {
               name: 'education',
-              type: 'text',
+              type: 'relationship',
+              relationTo: 'education_level',
               required: false,
             },
             {
@@ -215,6 +259,13 @@ const Users: CollectionConfig = {
             {
               name: 'is_smoker',
               type: 'checkbox',
+              required: false,
+            },
+            {
+              name: 'allergies',
+              type: 'relationship',
+              relationTo: 'allergies',
+              hasMany: true,
               required: false,
             },
             {
@@ -234,7 +285,25 @@ const Users: CollectionConfig = {
           fields: [
             {
               name: 'bio',
-              type: 'textarea',
+              type: 'richText',
+              editor: slateEditor({
+                admin: {
+                  elements: [
+                    'h1',
+                    'h2',
+                    'h3',
+                    'h4',
+                    'h5',
+                    'h6',
+                    'blockquote',
+                    'link',
+                    'indent',
+                    'textAlign',
+                    'ol',
+                    'ul',
+                  ],
+                },
+              }),
               required: false,
             },
             {
@@ -253,7 +322,9 @@ const Users: CollectionConfig = {
             },
             {
               name: 'keywords',
-              type: 'text',
+              type: 'relationship',
+              relationTo: 'keywords',
+              hasMany: true,
               required: false,
             },
           ],
@@ -342,6 +413,11 @@ const Users: CollectionConfig = {
         readOnly: true,
         hidden: true,
       },
+    },
+    {
+      name: 'subscribe_to_news',
+      type: 'checkbox',
+      required: false,
     },
   ],
   timestamps: true,

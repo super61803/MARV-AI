@@ -29,7 +29,7 @@
     "@payloadcms/plugin-redirects": "^1.0.0",
     "@payloadcms/plugin-seo": "^1.0.10",
     "@payloadcms/plugin-stripe": "^0.0.19",
-    "@payloadcms/richtext-slate": "^1.0.0",
+    "@payloadcms/richtext-slate": "^1.5.2",
     "@stripe/react-stripe-js": "^1.16.3",
     "@stripe/stripe-js": "^1.46.0",
     "cross-env": "^7.0.3",
@@ -45,6 +45,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "7.45.4",
     "react-router-dom": "5.3.4",
+    "sharp": "^0.33.4",
     "stripe": "^10.2.0"
   },
   "devDependencies": {
