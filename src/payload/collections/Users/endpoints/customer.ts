@@ -8,15 +8,41 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 const logs = process.env.LOGS_STRIPE_PROXY === '1'
 
+/** Keys passed through to `stripe.customers.update` (profile and billing prefs only). */
+const ALLOWED_CUSTOMER_UPDATE_KEYS = [
+  'name',
+  'email',
+  'phone',
+  'description',
+  'address',
+  'shipping',
+  'metadata',
+  'invoice_settings',
+  'preferred_locales',
+  'tax_exempt',
+] as const
+
+function pickAllowedCustomerUpdateParams(
+  body: Record<string, unknown>,
+): Partial<Stripe.CustomerUpdateParams> {
+  const out: Partial<Stripe.CustomerUpdateParams> = {}
+  for (const key of ALLOWED_CUSTOMER_UPDATE_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(body, key) && body[key] !== undefined) {
+      ;(out as Record<string, unknown>)[key] = body[key]
+    }
+  }
+  return out
+}
+
 // use this handler to interact with a Stripe customer associated with any given user
 // does so in secure way that does not leak or expose any cross-customer data
 // pass the proper method and body to this endpoint to interact with the Stripe API
 // available methods:
-// GET /api/users/:id/customer
-// POST /api/users/:id/customer
-// body: { customer: Stripe.CustomerUpdateParams }
+// GET /api/users/:teamID/customer
+// PATCH /api/users/:teamID/customer
+// body: subset of Stripe.CustomerUpdateParams (see ALLOWED_CUSTOMER_UPDATE_KEYS)
 export const customerProxy: PayloadHandler = async (req: PayloadRequest, res) => {
-  const { userID } = req.params
+  const userIdParam = req.params.teamID
 
   if (!req.user) {
     if (logs) req.payload.logger.error({ err: `You are not authorized to access this customer` })
@@ -24,8 +50,13 @@ export const customerProxy: PayloadHandler = async (req: PayloadRequest, res) =>
     return
   }
 
+  if (userIdParam !== undefined && String(req.user.id) !== String(userIdParam)) {
+    res.status(403).json({ error: 'You are not authorized to access this customer' })
+    return
+  }
+
   if (!req.user?.stripeCustomerID) {
-    const message = `No stripeCustomerID found for user ${userID}`
+    const message = `No stripeCustomerID found for user ${String(req.user.id)}`
     if (logs) req.payload.logger.error({ err: message })
     res.status(401).json({ error: message })
     return
@@ -37,6 +68,7 @@ export const customerProxy: PayloadHandler = async (req: PayloadRequest, res) =>
       | Stripe.DeletedCustomer
       | Array<Stripe.Customer | Stripe.DeletedCustomer>
       | Stripe.ApiList<Stripe.Customer | Stripe.DeletedCustomer>
+      | undefined
 
     let customer: Stripe.Customer | Stripe.DeletedCustomer | null = null
 
@@ -66,9 +98,18 @@ export const customerProxy: PayloadHandler = async (req: PayloadRequest, res) =>
     }
 
     if (req.method === 'PATCH') {
-      if (!req.body) throw new Error('No customer data provided')
-      // TODO: lock down the spread `customer` object to only allow certain fields
-      response = await stripe.customers.update(req.user.stripeCustomerID, req.body)
+      if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+        res.status(400).json({ error: 'Request body must be a JSON object' })
+        return
+      }
+      const updateParams = pickAllowedCustomerUpdateParams(req.body as Record<string, unknown>)
+      if (Object.keys(updateParams).length === 0) {
+        res
+          .status(400)
+          .json({ error: 'No allowed fields to update', allowedKeys: [...ALLOWED_CUSTOMER_UPDATE_KEYS] })
+        return
+      }
+      response = await stripe.customers.update(req.user.stripeCustomerID, updateParams)
     }
 
     res.status(200).json(response)
