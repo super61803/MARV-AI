@@ -1,14 +1,15 @@
-# Payload E-Commerce Template
+# MARV AI
 
-This is the official [Payload E-Commerce Template](https://github.com/payloadcms/payload/blob/main/templates/ecommerce). Use it to power e-commerce businesses and online stores of all sizes. This repo includes a fully-working backend, enterprise-grade admin panel, and a beautifully designed, production-ready website.
+**Marv Tech API List** — a [Payload CMS](https://payloadcms.com/) app (PostgreSQL) for managing APIs, catalog-style content, and related data. The codebase started from the official [Payload E-Commerce Template](https://github.com/payloadcms/payload/blob/main/templates/ecommerce), so it still includes ecommerce pieces (Stripe, cart, orders) you can use or trim over time.
 
-This template is right for you if you are selling:
+What you get out of the box:
 
-- Physical products like clothing or merchandise
-- Digital assets like ebooks or videos
-- Access to content like courses or premium articles
+- Admin UI and role-based users (`admin` / `customer`)
+- Custom collections (e.g. keywords, languages, reviews) alongside template collections (products, pages, media)
+- Stripe hooks and checkout-related endpoints where enabled
+- SEO, redirects, and nested categories (see sections below)
 
-Core features:
+Core template features (still documented below):
 
 - [Pre-configured Payload Config](#how-it-works)
 - [Authentication](#users-authentication)
@@ -22,36 +23,18 @@ Core features:
 
 ## Quick Start
 
-To spin up this example locally, follow these steps:
-
-### Clone
-
-If you have not done so already, you need to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
-
-#### Method 1 (recommended)
-
-  Go to Payload Cloud and [clone this template](https://payloadcms.com/new/clone/ecommerce). This will create a new repository on your GitHub account with this template's code which you can then clone to your own machine.
-
-#### Method 2
-
-  Use the `create-payload-app` CLI to clone this template directly to your machine:
-
-    npx create-payload-app@latest my-project -t ecommerce
-
-#### Method 3
-
-  Use the `git` CLI to clone this template directly to your machine:
-
-    git clone -n --depth=1 --filter=tree:0 https://github.com/payloadcms/payload my-project && cd my-project && git sparse-checkout set --no-cone templates/ecommerce && git checkout && rm -rf .git && git init && git add . && git mv -f templates/ecommerce/{.,}* . && git add . && git commit -m "Initial commit"
-
 ### Development
 
-1. First [clone the repo](#clone) if you have not done so already
-1. `cd my-project && cp .env.example .env` to copy the example environment variables
-1. `yarn && yarn dev` to install dependencies and start the dev server
-1. `open http://localhost:3000` to open the app in your browser
+1. Clone this repository and `cd` into the project root.
+1. Copy environment variables: `cp .env.example .env` and set at least `PAYLOAD_SECRET`, `DATABASE_URI`, and `PAYLOAD_PUBLIC_SERVER_URL` (see Payload and Postgres docs as needed).
+1. Install and run: `npm install && npm run dev`
+1. Open `http://localhost:3000` (root redirects to `/admin`). Create the first user when prompted; that user becomes admin.
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. To begin accepting payment, follow the [Stripe](#stripe) guide. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+Changes under `./src` reload with the dev server. For payments, follow [Stripe](#stripe). For production build and deploy, see [Production](#production) and [Deployment](#deployment).
+
+### Clone (upstream template only)
+
+If you are bootstrapping a **new** project from Payload’s template instead of this repo, use [Payload Cloud](https://payloadcms.com/new/clone/ecommerce), `npx create-payload-app@latest my-project -t ecommerce`, or the sparse-checkout flow described in the [template README](https://github.com/payloadcms/payload/blob/main/templates/ecommerce/README.md).
 
 ## How it works
 
